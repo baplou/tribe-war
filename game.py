@@ -4,6 +4,7 @@ import pygame
 
 W, H = 1080, 850
 screen = pygame.display.set_mode((W, H))
+pygame.display.set_caption("Tribe War")
 clock = pygame.time.Clock()
 
 while True:
