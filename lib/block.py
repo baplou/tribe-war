@@ -6,4 +6,7 @@ class Block:
     self.y = y
 
   def draw(self, screen):
-    screen.blit(self.image, (x, y))
+    screen.blit(self.image, (self.x, self.y))
+
+  def __repr__(self):
+    return f"[block: x={self.x} y={self.y}"

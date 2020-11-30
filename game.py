@@ -32,9 +32,19 @@ red_block_image = pygame.transform.scale(pygame.image.load("assets/red-block.png
 # implement city functionality
 # better land generation
 # multiplayer support (noob networking)
+# ocean
 def generate_land():
-  for i in range(20):
-    b = Block(green_block_image, (coords[random.choice(good_coords)], coords[random.choice(good_coords)]))
+  """
+  for i in range(80):
+    image = random.choice([green_block_image, red_block_image])
+    bcoords = random.choice(coords)
+    b = Block(image, bcoords[0], bcoords[1])
+    blocks.append(b)
+  """
+  # ocean will be added later
+  # i have no clue how to do good random world generation
+  for i in coords:
+    b = Block(random.choice([green_block_image, red_block_image]), i[0], i[1])
     blocks.append(b)
 
 def redraw():
@@ -42,14 +52,13 @@ def redraw():
   # Layer 1 = Background (ocean)
   # Layer 2 = Land or "blocks"
   # Layer 3 = Charcters
-
   screen.blit(bg, (0,0))
   for block in blocks:
     block.draw(screen)
   for soldier in soldiers:
     soldier.draw(screen)
 
-#generate_land()
+generate_land()
 while True:
   for event in pygame.event.get():
     if event.type == pygame.QUIT:

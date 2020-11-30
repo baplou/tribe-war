@@ -19,5 +19,11 @@ class Soldier:
     screen.blit(self.image, (self.x, self.y))
 
 class City:
-  def __init__(self, level=1):
+  def __init__(self, x, y, image, level=1):
+    self.x = x
+    self.y = x
+    self.image = image
     self.level = level
+
+  def draw(self, screen):
+    screen.blit(self.image, (self.x, self.y))
