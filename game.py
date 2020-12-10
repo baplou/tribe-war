@@ -26,7 +26,6 @@ blocks = []
 cities = []
 cc = [] # city coords
         # for generate_cities()
-bg = pygame.transform.scale(pygame.image.load("assets/bg.png"), (W, H)).convert()
 green_block_image = pygame.transform.scale(pygame.image.load("assets/green-block.png"), (50, 50)).convert()
 red_block_image = pygame.transform.scale(pygame.image.load("assets/red-block.png"), (50, 50)).convert()
 
@@ -41,30 +40,35 @@ def generate_land():
     blocks.append(b)
 
 # not working yet
+# need to draw cities
 def generate_cities():
-  a = random.choice(coords)
-  cc.append(coords.index(a))
-  if len(cc) == 1:
-    pass
-  else:
-    # compare to see if cities are too close
-    # try:
-    #   coords.index(a)
-    pass
-    #ret = City(a[0], a[1] """image""")
-    #cities.append(ret)
+  while valid < 15:
+    a = random.choice(coords)
+    if len(cc) == 1:
+      cc.append(a) 
+      #ret = City(a[0], a[1] """image""")
+      #cities.append(ret)
+      valid += 1
+    else:
+      for c in cc:
+        if abs(c[0] - a[0]) >= 500 and abs(c[1] - a[1]) >= 500: # compare if cities are too close
+          valid += 1
+          #ret = City(a[0], a[1] """image""")
+          #cities.append(ret)
 
 def redraw():
   # Screen Structure:
-  # Layer 1 = Background (ocean)
-  # Layer 2 = Land or "blocks"
-  # Layer 3 = City
-  # Layer 4 = Soldier
-  screen.blit(bg, (0,0)) # not necessary
+  # Layer 1 = Land or "blocks"
+  # Layer 2 = City
+  # Layer 3 = Soldier
   for block in blocks:
     block.draw(screen)
   for soldier in soldiers:
     soldier.draw(screen)
+  """
+  for city in cities:
+    city.draw(screen)
+  """
 
 generate_land()
 #generate_cities()
@@ -78,5 +82,6 @@ while True:
       soldiers.remove(soldier)
 
   redraw()
+
   pygame.display.update()
   clock.tick(60)
