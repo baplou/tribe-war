@@ -1,4 +1,3 @@
-# screen_items.py
 class Soldier:
   def __init__(self, x, y, image, health=100):
     self.x = x

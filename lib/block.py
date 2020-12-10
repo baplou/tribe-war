@@ -1,4 +1,3 @@
-# block.py
 class Block:
   def __init__(self, image, x, y):
     self.image = image
