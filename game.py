@@ -10,12 +10,11 @@ except ImportError:
   else:
     quit()
 
-from lib.block import Block
+from lib.coords import coords
 from lib.screen_items import City
 from lib.screen_items import Soldier
-from lib.coords import coords
+from lib.screen_items import Block
 
-# var and const
 W, H = 1100, 850
 screen = pygame.display.set_mode((W, H))
 #pygame.display.set_icon()
@@ -23,38 +22,36 @@ clock = pygame.time.Clock()
 soldiers = []
 players = []
 blocks = []
-cities = []
+cities = [] # holds City() objects
 cc = [] # city coords
         # for generate_cities()
 green_block_image = pygame.transform.scale(pygame.image.load("assets/green-block.png"), (50, 50)).convert()
 red_block_image = pygame.transform.scale(pygame.image.load("assets/red-block.png"), (50, 50)).convert()
+house_image = pygame.transform.scale(pygame.image.load("assets/house.png"), (50, 50)).convert_alpha()
 
-# todo:
-# draw city images
-# implement city functionality
-# multiplayer support (noob networking)
-# ocean
 def generate_land():
   for i in coords:
     b = Block(random.choice([green_block_image, red_block_image]), i[0], i[1])
     blocks.append(b)
 
-# not working yet
-# need to draw cities
 def generate_cities():
-  while valid < 15:
+  valid = 0
+  while valid <= 10:
     a = random.choice(coords)
-    if len(cc) == 1:
+    print(f"({a[0]}, {a[1]})")
+    if len(cc) == 0:
       cc.append(a) 
-      #ret = City(a[0], a[1] """image""")
-      #cities.append(ret)
+      ret = City(a[0], a[1], house_image)
+      cities.append(ret)
       valid += 1
     else:
-      for c in cc:
-        if abs(c[0] - a[0]) >= 500 and abs(c[1] - a[1]) >= 500: # compare if cities are too close
+      for i in cc:
+        if a != i:
+          cc.append(a) 
+          ret = City(a[0], a[1], house_image)
+          cities.append(ret)
           valid += 1
-          #ret = City(a[0], a[1] """image""")
-          #cities.append(ret)
+          break
 
 def redraw():
   # Screen Structure:
@@ -65,13 +62,17 @@ def redraw():
     block.draw(screen)
   for soldier in soldiers:
     soldier.draw(screen)
-  """
   for city in cities:
     city.draw(screen)
-  """
 
+# debugging
 generate_land()
-#generate_cities()
+print("----- 1 -----")
+generate_cities()
+print("----- 2 -----")
+for i in cities:
+  print(f"({i.x}, {i.y})")
+
 while True:
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
