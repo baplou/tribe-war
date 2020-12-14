@@ -38,3 +38,11 @@ class Block:
 
   def __repr__(self):
     return f"[block: x={self.x} y={self.y}"
+
+class Cursor:
+  def __init__(self, image, coord):
+    self.image = image
+    self.coord = coord
+
+  def draw(self, screen):
+    screen.blit(self.image, self.coord)
