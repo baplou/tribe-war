@@ -1,5 +1,4 @@
 Python files used for ../game.py
 
-screen_items.py -> 'Soldier' class and 'City' class
-block.py -> 'Block' class
-coords.py -> 'coords' list
+screen_items.py  -> 'Soldier' class, 'City' class, and 'Block' class
+coords.py        -> 'coords' list
