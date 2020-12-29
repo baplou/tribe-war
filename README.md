@@ -6,6 +6,7 @@
 
 ## Playing the game
 ```bash
+pip3 install pygame
 git clone https://github.com/baplou/tribe-war.git
 cd tribe-war
 ./game.py
