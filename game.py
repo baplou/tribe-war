@@ -16,6 +16,11 @@ from lib import Soldier
 from lib import Block
 from lib import Cursor
 
+# W, H = 1100, 950 | -> bar at the bottom to display options?
+# other choice is drawing a black bar and setting it's .set_alpha() value.
+# reference: 
+# https://stackoverflow.com/questions/17581545/drawn-surface-transparency-in-pygame
+
 W, H = 1100, 850
 screen = pygame.display.set_mode((W, H))
 #pygame.display.set_icon()
@@ -82,6 +87,7 @@ def redraw():
   # Layer 3 = Red City
   # Layer 4 = Green City
   # Layer 5 = Soldier
+
   for block in blocks:
     block.draw(screen)
 
@@ -116,15 +122,16 @@ def update():
   # redifining i.image and i.mask
   for i in cities:
     if i.selected:
+      i.display_options(screen)
       i.image = pygame.transform.scale(pygame.image.load("assets/house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
     else:
       i.image = pygame.transform.scale(pygame.image.load("assets/house.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
 
-
   for i in green_cities:
     if i.selected:
+      i.display_options(screen)
       i.image = pygame.transform.scale(pygame.image.load("assets/green-house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
     else:
@@ -133,6 +140,7 @@ def update():
 
   for i in red_cities:
     if i.selected:
+      i.display_options(screen)
       i.image = pygame.transform.scale(pygame.image.load("assets/red-house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
     else:

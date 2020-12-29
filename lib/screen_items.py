@@ -18,6 +18,9 @@ class Soldier:
     if self.kills == 5:
       self.health = 200
 
+  def display_options(self, wnd):
+    pass
+
   def draw(self, screen):
     screen.blit(self.image, (self.x, self.y))
 
@@ -33,6 +36,9 @@ class City:
   def draw(self, screen):
     screen.blit(self.image, (self.x, self.y))
 
+  def display_options(self, wnd):
+    pass
+
 class Block:
   def __init__(self, image, x, y):
     self.image = image
@@ -42,6 +48,9 @@ class Block:
 
   def draw(self, screen):
     screen.blit(self.image, (self.x, self.y))
+
+  def display_options(self, wnd):
+    pass
 
   def __repr__(self):
     return f"[block: x={self.x} y={self.y}"
