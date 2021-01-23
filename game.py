@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# TODO:
+# cleanup repetitive code in redraw() updtate() and inside the main loop
+# caused because of multiple lists of cities (red_cities, green_cities, cities)
+
 import random
 import subprocess
 
@@ -16,24 +21,19 @@ from lib import Soldier
 from lib import Block
 from lib import Cursor
 
-# W, H = 1100, 950 | -> bar at the bottom to display options?
-# other choice is drawing a black bar and setting it's .set_alpha() value.
-# reference: 
-# https://stackoverflow.com/questions/17581545/drawn-surface-transparency-in-pygame
+W, H = 1100, 950
 
-W, H = 1100, 850
 screen = pygame.display.set_mode((W, H))
-#pygame.display.set_icon()
 pygame.mouse.set_visible(False)
 clock = pygame.time.Clock()
 
 soldiers = []
 players = []
 blocks = []
-cities = [] # holds City() objects
-cc = []     # city coords
-            # for generate_cities()
+cities = []
+cc = []     # city coords (generate_cities())
 
+actual_bg = pygame.transform.scale(pygame.image.load("assets/actual_bg.png"), (W, H)).convert()
 green_block_image = pygame.transform.scale(pygame.image.load("assets/green-block.png"), (50, 50)).convert()
 red_block_image = pygame.transform.scale(pygame.image.load("assets/red-block.png"), (50, 50)).convert()
 house_image = pygame.transform.scale(pygame.image.load("assets/house.png"), (50, 50)).convert_alpha()
@@ -82,11 +82,14 @@ green_cities = [choose_color_city(green_house_image)]
 
 def redraw():
   # Screen Structure:
-  # Layer 1 = Land or "blocks"
-  # Layer 2 = City
-  # Layer 3 = Red City
-  # Layer 4 = Green City
-  # Layer 5 = Soldier
+  # Layer 1 = Grey Image
+  # Layer 2 = Land or "blocks"
+  # Layer 3 = City
+  # Layer 5 = Red City
+  # Layer 6 = Green City
+  # Layer 7 = Soldier
+
+  screen.blit(actual_bg, (0, 0))
 
   for block in blocks:
     block.draw(screen)
@@ -120,6 +123,8 @@ def update():
       soldiers.remove(soldier)
 
   # redifining i.image and i.mask
+  # cleanup later:
+  # repetitive = bad
   for i in cities:
     if i.selected:
       i.display_options(screen)
@@ -154,6 +159,9 @@ while True:
     elif event.type == pygame.MOUSEMOTION:
       cursor.coord = event.pos
     elif event.type == pygame.MOUSEBUTTONDOWN:
+      # repetitive = bad
+      # cleanup later:
+
       # unselecting
       for i in cities:
         if i.selected:
