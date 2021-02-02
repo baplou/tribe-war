@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-
-# TODO:
-# cleanup repetitive code in redraw() updtate() and inside the main loop
-# caused because of multiple lists of cities (red_cities, green_cities, cities)
-
 import random
 import subprocess
 
@@ -27,11 +22,14 @@ screen = pygame.display.set_mode((W, H))
 pygame.mouse.set_visible(False)
 clock = pygame.time.Clock()
 
+green_stars = 5
+red_stars = 5
+
 soldiers = []
 players = []
 blocks = []
 cities = []
-cc = []     # city coords (generate_cities())
+cc = []
 
 actual_bg = pygame.transform.scale(pygame.image.load("assets/actual_bg.png"), (W, H)).convert()
 green_block_image = pygame.transform.scale(pygame.image.load("assets/green-block.png"), (50, 50)).convert()
@@ -39,9 +37,10 @@ red_block_image = pygame.transform.scale(pygame.image.load("assets/red-block.png
 house_image = pygame.transform.scale(pygame.image.load("assets/house.png"), (50, 50)).convert_alpha()
 cursor_image = pygame.transform.scale(pygame.image.load("assets/cursor.png"), (40, 40)).convert_alpha()
 
-# object used to display special cursor
 cursor = Cursor(cursor_image, (0, 0))
 
+# epic gamer terrain generation
+# proffesionally crafted functions below
 def generate_land():
   for i in coords:
     b = Block(random.choice([green_block_image, red_block_image]), i[0], i[1])
@@ -122,9 +121,6 @@ def update():
     if soldier.health <= 0:
       soldiers.remove(soldier)
 
-  # redifining i.image and i.mask
-  # cleanup later:
-  # repetitive = bad
   for i in cities:
     if i.selected:
       i.display_options(screen)
@@ -159,9 +155,6 @@ while True:
     elif event.type == pygame.MOUSEMOTION:
       cursor.coord = event.pos
     elif event.type == pygame.MOUSEBUTTONDOWN:
-      # repetitive = bad
-      # cleanup later:
-
       # unselecting
       for i in cities:
         if i.selected:
@@ -187,6 +180,16 @@ while True:
       for i in red_cities:
         if collision(cursor, i):
           i.selected = True
+
+  """
+  if eot: # eot = end of turn
+    if turn == "red":
+      for i in red_cities:
+        red_stars += 2
+    else if turn == "green":
+      for i in green_cities:
+        green_stars += 1
+  """
 
   update()
   redraw()
