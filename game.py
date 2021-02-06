@@ -10,12 +10,11 @@ except ImportError:
   else:
     quit()
 
-from lib import coords
-from lib import City
-from lib import Soldier
-from lib import Block
-from lib import Cursor
+from lib import *
 
+turn = "green"
+
+pygame.font.init()
 W, H = 1100, 950
 
 screen = pygame.display.set_mode((W, H))
@@ -25,12 +24,15 @@ clock = pygame.time.Clock()
 green_stars = 5
 red_stars = 5
 
+main_font = pygame.font.SysFont("comicsans", 50)
+
 soldiers = []
 players = []
 blocks = []
 cities = []
 cc = []
 
+next_turn = NextTurn()
 actual_bg = pygame.transform.scale(pygame.image.load("assets/actual_bg.png"), (W, H)).convert()
 green_block_image = pygame.transform.scale(pygame.image.load("assets/green-block.png"), (50, 50)).convert()
 red_block_image = pygame.transform.scale(pygame.image.load("assets/red-block.png"), (50, 50)).convert()
@@ -38,6 +40,10 @@ house_image = pygame.transform.scale(pygame.image.load("assets/house.png"), (50,
 cursor_image = pygame.transform.scale(pygame.image.load("assets/cursor.png"), (40, 40)).convert_alpha()
 
 cursor = Cursor(cursor_image, (0, 0))
+
+def end():
+  # what happends at the end of the game
+  pass
 
 # epic gamer terrain generation
 # proffesionally crafted functions below
@@ -80,50 +86,40 @@ red_cities = [choose_color_city(red_house_image)]
 green_cities = [choose_color_city(green_house_image)]
 
 def redraw():
-  # Screen Structure:
-  # Layer 1 = Grey Image
-  # Layer 2 = Land or "blocks"
-  # Layer 3 = City
-  # Layer 5 = Red City
-  # Layer 6 = Green City
-  # Layer 7 = Soldier
-
   screen.blit(actual_bg, (0, 0))
-
   for block in blocks:
     block.draw(screen)
-
   for city in cities:
     city.draw(screen)
-
   for c in red_cities:
     c.draw(screen)
-
   for c in green_cities:
     c.draw(screen)
-
   for soldier in soldiers:
     soldier.draw(screen)
-
+  screen.blit(turn_label, (10, 880))
+  screen.blit(next_turn.image, next_turn.coord)
   cursor.draw(screen)
 
 def collision(obj1, obj2):
-    offset_x = obj2.x - obj1.coord[0]
-    offset_y = obj2.y - obj1.coord[1]
+  offset_x = obj2.x - obj1.coord[0]
+  offset_y = obj2.y - obj1.coord[1]
 
-    if obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None:
-      return True
-    else:
-      return False
+  if obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None:
+    return True
+  else:
+    return False
 
 def update():
+  global turn_label
+  turn_label = main_font.render(f"Turn: {turn}", 1, (255, 255, 255))
+
   for soldier in soldiers:
     if soldier.health <= 0:
       soldiers.remove(soldier)
 
   for i in cities:
     if i.selected:
-      i.display_options(screen)
       i.image = pygame.transform.scale(pygame.image.load("assets/house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
     else:
@@ -132,7 +128,6 @@ def update():
 
   for i in green_cities:
     if i.selected:
-      i.display_options(screen)
       i.image = pygame.transform.scale(pygame.image.load("assets/green-house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
     else:
@@ -141,12 +136,14 @@ def update():
 
   for i in red_cities:
     if i.selected:
-      i.display_options(screen)
       i.image = pygame.transform.scale(pygame.image.load("assets/red-house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
     else:
       i.image = pygame.transform.scale(pygame.image.load("assets/red-house.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
+
+  if len(cities) <= 0:
+    end()
 
 while True:
   for event in pygame.event.get():
@@ -155,41 +152,33 @@ while True:
     elif event.type == pygame.MOUSEMOTION:
       cursor.coord = event.pos
     elif event.type == pygame.MOUSEBUTTONDOWN:
-      # unselecting
+      if collision(cursor, next_turn):
+        if turn == "green":
+          turn = "red"
+        else:
+          turn = "green"
+
       for i in cities:
         if i.selected:
           i.selected = False
-
       for i in red_cities:
         if i.selected:
           i.selected = False
-
       for i in green_cities:
         if i.selected:
           i.selected = False
 
-      # selecting
+      # -------------------------------
+
       for i in cities:
         if collision(cursor, i):
           i.selected = True
-
       for i in green_cities:
         if collision(cursor, i):
           i.selected = True
-
       for i in red_cities:
         if collision(cursor, i):
           i.selected = True
-
-  """
-  if eot: # eot = end of turn
-    if turn == "red":
-      for i in red_cities:
-        red_stars += 2
-    else if turn == "green":
-      for i in green_cities:
-        green_stars += 1
-  """
 
   update()
   redraw()
