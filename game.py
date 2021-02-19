@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import random
 import subprocess
+from lib import *
 
 try:
   import pygame
@@ -10,10 +11,7 @@ except ImportError:
   else:
     quit()
 
-from lib import *
-
 turn = "green"
-
 pygame.font.init()
 W, H = 1100, 950
 
@@ -42,7 +40,6 @@ cursor_image = pygame.transform.scale(pygame.image.load("assets/cursor.png"), (4
 cursor = Cursor(cursor_image, (0, 0))
 
 def end():
-  # what happends at the end of the game
   pass
 
 # epic gamer terrain generation
@@ -87,6 +84,7 @@ green_cities = [choose_color_city(green_house_image)]
 
 def redraw():
   screen.blit(actual_bg, (0, 0))
+
   for block in blocks:
     block.draw(screen)
   for city in cities:
@@ -97,6 +95,7 @@ def redraw():
     c.draw(screen)
   for soldier in soldiers:
     soldier.draw(screen)
+
   screen.blit(turn_label, (10, 880))
   screen.blit(next_turn.image, next_turn.coord)
   cursor.draw(screen)
@@ -110,6 +109,18 @@ def collision(obj1, obj2):
   else:
     return False
 
+def show_options(turn, city_clr):
+  if city_clr == "none":
+    print("Free city! Belongs to no tribe")
+  elif turn == "green" and city_clr == "red":
+    print("City belongs to the red tribe! You must capture this city")
+  elif turn == "red" and city_clr == "red":
+    print("This city belongs to you! :)")
+  elif turn == "green" and city_clr == "green":
+    print("This city belongs to you! :)")
+  elif turn == "red" and city_clr == "green":
+    print("City belongs to the green tribe! You must capture this city")
+
 def update():
   global turn_label
   turn_label = main_font.render(f"Turn: {turn}", 1, (255, 255, 255))
@@ -122,6 +133,7 @@ def update():
     if i.selected:
       i.image = pygame.transform.scale(pygame.image.load("assets/house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
+      show_options(turn, "none")
     else:
       i.image = pygame.transform.scale(pygame.image.load("assets/house.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
@@ -130,6 +142,7 @@ def update():
     if i.selected:
       i.image = pygame.transform.scale(pygame.image.load("assets/green-house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
+      show_options(turn, "green")
     else:
       i.image = pygame.transform.scale(pygame.image.load("assets/green-house.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
@@ -138,6 +151,7 @@ def update():
     if i.selected:
       i.image = pygame.transform.scale(pygame.image.load("assets/red-house-selected.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
+      show_options(turn, "red")
     else:
       i.image = pygame.transform.scale(pygame.image.load("assets/red-house.png"), (50, 50)).convert_alpha()
       i.mask = pygame.mask.from_surface(i.image)
@@ -167,8 +181,6 @@ while True:
       for i in green_cities:
         if i.selected:
           i.selected = False
-
-      # -------------------------------
 
       for i in cities:
         if collision(cursor, i):
