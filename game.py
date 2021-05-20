@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
-import random
 import subprocess
+import pygame
+import random
 from lib import *
-
-try:
-  import pygame
-except ImportError:
-  if input("Install the required dependencies? [y/n]: ") == "y":
-    subprocess.run("pip3 install pygame", shell=True)
-  else:
-    quit()
 
 turn = "green"
 pygame.font.init()
@@ -22,13 +15,16 @@ clock = pygame.time.Clock()
 green_stars = 5
 red_stars = 5
 
-main_font = pygame.font.SysFont("comicsans", 50)
-
 soldiers = []
 players = []
 blocks = []
 cities = []
 cc = []
+
+main_font = pygame.font.SysFont("comicsans", 50)
+
+red_stars_surface = main_font.render(f"Red Player Stars: {red_stars}", 1, (255, 255, 255))
+green_stars_surface = main_font.render(f"Green Player Stars: {green_stars}", 1, (255, 255, 255))
 
 next_turn = NextTurn()
 actual_bg = pygame.transform.scale(pygame.image.load("assets/actual_bg.png"), (W, H)).convert()
@@ -36,14 +32,14 @@ green_block_image = pygame.transform.scale(pygame.image.load("assets/green-block
 red_block_image = pygame.transform.scale(pygame.image.load("assets/red-block.png"), (50, 50)).convert()
 house_image = pygame.transform.scale(pygame.image.load("assets/house.png"), (50, 50)).convert_alpha()
 cursor_image = pygame.transform.scale(pygame.image.load("assets/cursor.png"), (40, 40)).convert_alpha()
+red_house_image = pygame.transform.scale(pygame.image.load("assets/red-house.png"), (50, 50)).convert_alpha()
+green_house_image = pygame.transform.scale(pygame.image.load("assets/green-house.png"), (50, 50)).convert_alpha()
 
 cursor = Cursor(cursor_image, (0, 0))
 
 def end():
   pass
 
-# epic gamer terrain generation
-# proffesionally crafted functions below
 def generate_land():
   for i in coords:
     b = Block(random.choice([green_block_image, red_block_image]), i[0], i[1])
@@ -70,9 +66,6 @@ def generate_cities():
 generate_land()
 generate_cities()
 
-red_house_image = pygame.transform.scale(pygame.image.load("assets/red-house.png"), (50, 50)).convert_alpha()
-green_house_image = pygame.transform.scale(pygame.image.load("assets/green-house.png"), (50, 50)).convert_alpha()
-
 def choose_color_city(img):
   ret = random.choice(cities)
   cities.remove(ret)
@@ -81,6 +74,28 @@ def choose_color_city(img):
 
 red_cities = [choose_color_city(red_house_image)]
 green_cities = [choose_color_city(green_house_image)]
+
+def collision(obj1, obj2):
+  offset_x = obj2.x - obj1.coord[0]
+  offset_y = obj2.y - obj1.coord[1]
+
+  if obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None:
+    return True
+  else:
+    return False
+
+# throw local var assingment error shit do not use
+def show_options(turn, city_clr):
+  if city_clr == "none":
+    pass
+  elif turn == "green" and city_clr == "red":
+    pass
+  elif turn == "red" and city_clr == "red":
+    pass
+  elif turn == "green" and city_clr == "green":
+    pass
+  elif turn == "red" and city_clr == "green":
+    pass
 
 def redraw():
   screen.blit(actual_bg, (0, 0))
@@ -99,27 +114,6 @@ def redraw():
   screen.blit(turn_label, (10, 880))
   screen.blit(next_turn.image, next_turn.coord)
   cursor.draw(screen)
-
-def collision(obj1, obj2):
-  offset_x = obj2.x - obj1.coord[0]
-  offset_y = obj2.y - obj1.coord[1]
-
-  if obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None:
-    return True
-  else:
-    return False
-
-def show_options(turn, city_clr):
-  if city_clr == "none":
-    print("Free city! Belongs to no tribe")
-  elif turn == "green" and city_clr == "red":
-    print("City belongs to the red tribe! You must capture this city")
-  elif turn == "red" and city_clr == "red":
-    print("This city belongs to you! :)")
-  elif turn == "green" and city_clr == "green":
-    print("This city belongs to you! :)")
-  elif turn == "red" and city_clr == "green":
-    print("City belongs to the green tribe! You must capture this city")
 
 def update():
   global turn_label
@@ -169,9 +163,15 @@ while True:
       if collision(cursor, next_turn):
         if turn == "green":
           turn = "red"
-        else:
+        else: 
           turn = "green"
 
+        for i in range(len(green_cities) - 1):
+          green_stars += 1
+        for i in range(len(red_cities) - 1):
+          red_stars += 1
+
+      # clearing selected cities
       for i in cities:
         if i.selected:
           i.selected = False
@@ -182,6 +182,7 @@ while True:
         if i.selected:
           i.selected = False
 
+      # selecting cities
       for i in cities:
         if collision(cursor, i):
           i.selected = True
